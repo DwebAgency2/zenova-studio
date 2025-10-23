@@ -3,6 +3,7 @@ import "./globals.css";
 import VisualEditsMessenger from "../visual-edits/VisualEditsMessenger";
 import ErrorReporter from "@/component/ErrorReporter";
 import Script from "next/script";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "ZENOVA - Where Small Businesses Look Big Online",
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  
 }: Readonly<{
   children: React.ReactNode;
 }>) {
@@ -32,6 +34,8 @@ export default function RootLayout({
           data-custom-data='{"appName": "YourApp", "version": "1.0.0", "greeting": "hi"}'
         />
         {children}
+          {/* ✅ Toast notification container (must be inside body) */}
+        <Toaster position="top-right" reverseOrder={false} />
         <VisualEditsMessenger />
       </body>
     </html>

@@ -6,6 +6,8 @@ import { Button } from "@/component/ui/button";
 import { Card } from "@/component/ui/card";
 import { Input } from "@/component/ui/input";
 import { Textarea } from "@/component/ui/textarea";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
+import { toast } from "react-hot-toast";
 
 import {
   Dialog,
@@ -41,7 +43,6 @@ import {
   ChevronDown,
 } from "lucide-react";
 
-
 export default function Home() {
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
   const [selectedService, setSelectedService] = useState<any>(null);
@@ -49,6 +50,90 @@ export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("");
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setStatus("");
+
+    const honeyPot = (document.getElementById("website") as HTMLInputElement)
+      ?.value;
+
+    if (honeyPot) {
+      toast.error("Spam detected. Submission blocked.");
+      setLoading(false);
+      return;
+    }
+
+    // Validate form
+    if (
+      !formData.name.trim() ||
+      !formData.email.trim() ||
+      !formData.phone.trim() ||
+      !formData.message.trim()
+    ) {
+      toast.error("❌ Please fill in all fields");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // ✅ Parse and validate phone number
+      const parsedPhone = parsePhoneNumberFromString(formData.phone);
+
+      if (!parsedPhone || !parsedPhone.isValid()) {
+        toast.error(
+          "❌ Please enter a valid phone number (include country code, e.g., +234...)"
+        );
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Format number into E.164 (e.g. +2348069220707)
+      const formattedPhone = parsedPhone.number;
+
+      const response = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          phone: formattedPhone, // replace original phone with formatted version
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("✅ Message sent successfully!");
+        setFormData({ name: "", email: "", phone: "", message: "" });
+      } else {
+        toast.error(`❌ ${data.error || "Something went wrong. Try again."}`);
+      }
+    } catch (error) {
+      toast.error("⚠️ Server error. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Initialize theme from localStorage
   useEffect(() => {
@@ -83,7 +168,6 @@ export default function Home() {
   const toggleFaq = (index: number) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
-    
 
   const services = [
     {
@@ -111,7 +195,7 @@ export default function Home() {
         "3 rounds of revisions included",
       ],
       image:
-       "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop",
     },
     {
       icon: RefreshCw,
@@ -124,7 +208,7 @@ export default function Home() {
         "Mobile optimization",
         "Performance boost",
       ],
-      color: "#0B132B",
+      color: "#F0C93D",
       fullDescription:
         "Outdated Website? Let’s Fix That.Your website is often your first impression — and at Lunvia, we make sure it’s unforgettable. We’ll take your existing site and rebuild it with better design, better performance, and better conversion flow.",
       detailedFeatures: [
@@ -227,70 +311,69 @@ export default function Home() {
   ];
 
   const pricingPlans = [
-  {
-    name: "Template",
-    price: "$79",  // Raised slightly to reflect good quality React template, demos, support etc.
-    description:
-      "Perfect for solo brands & small businesses – a ready-to-launch website template designed for your niche, fully responsive, React-based.",
-    features: [
-      "Choose from 50+ premium templates",
-      "Fully responsive, React-based design with easy customization",
-      "Mobile and desktop optimized",
-      "SEO-friendly structure & performance basics",
-      "Live demo + preview screenshots",
-      "Free setup guide & 14-day email support",
-      "One-time payment — lifetime ownership",
-    ],
-    popular: false,
-  },
-  {
-    name: "Template + Setup",
-    price: "$229",  // mid level: template + some service
-    description:
-      "Template plus custom setup – we will install, brand, and personalize for your business.",
-    features: [
-      "Everything in Template plan",
-      "Domain / hosting guide or assistance",
-      "Brand colors, logos, images replaced",
-      "One round of content replacement (text/images)",
-      "Basic SEO adjustments",
-      "30-day support & bug fixes",
-    ],
-    popular: true,
-  },
-  {
-    name: "Custom Website",
-    price: "$999",  // similar to Webexis, gives you room to provide value
-    description:
-      "Tailored website design & development to match your brand—built from scratch with custom layout and features.",
-    features: [
-      "Unique custom design from wireframe",
-      "Unlimited revisions (within defined scope)",
-      "Responsive, high performance, fast loading",
-      "Advanced SEO optimization",
-      "Content integration & forms",
-      "Analytics / maps / integrations as needed",
-      "Training / handover + 60 days support",
-    ],
-    popular: false,
-  },
-  {
-    name: "Enterprise / Agency",
-    price: "Custom",
-    description:
-      "For complex requirements - large sites, integrations, or multi-site clients. Contact for quote.",
-    features: [
-      "Everything in Custom Website plan",
-      "E-commerce / API integrations / plugin & module development",
-      "Dedicated account manager",
-      "Custom optimization, scaling & maintenance",
-      "Priority 24/7 support",
-      "White-label handover and full documentation",
-    ],
-    popular: false,
-  },
-];
-
+    {
+      name: "Template",
+      price: "$79", // Raised slightly to reflect good quality React template, demos, support etc.
+      description:
+        "Perfect for solo brands & small businesses – a ready-to-launch website template designed for your niche, fully responsive, React-based.",
+      features: [
+        "Choose from 50+ premium templates",
+        "Fully responsive, React-based design with easy customization",
+        "Mobile and desktop optimized",
+        "SEO-friendly structure & performance basics",
+        "Live demo + preview screenshots",
+        "Free setup guide & 14-day email support",
+        "One-time payment — lifetime ownership",
+      ],
+      popular: false,
+    },
+    {
+      name: "Template + Setup",
+      price: "$229", // mid level: template + some service
+      description:
+        "Template plus custom setup – we will install, brand, and personalize for your business.",
+      features: [
+        "Everything in Template plan",
+        "Domain / hosting guide or assistance",
+        "Brand colors, logos, images replaced",
+        "One round of content replacement (text/images)",
+        "Basic SEO adjustments",
+        "30-day support & bug fixes",
+      ],
+      popular: true,
+    },
+    {
+      name: "Custom Website",
+      price: "$999", // similar to Webexis, gives you room to provide value
+      description:
+        "Tailored website design & development to match your brand—built from scratch with custom layout and features.",
+      features: [
+        "Unique custom design from wireframe",
+        "Unlimited revisions (within defined scope)",
+        "Responsive, high performance, fast loading",
+        "Advanced SEO optimization",
+        "Content integration & forms",
+        "Analytics / maps / integrations as needed",
+        "Training / handover + 60 days support",
+      ],
+      popular: false,
+    },
+    {
+      name: "Enterprise / Agency",
+      price: "Custom",
+      description:
+        "For complex requirements - large sites, integrations, or multi-site clients. Contact for quote.",
+      features: [
+        "Everything in Custom Website plan",
+        "E-commerce / API integrations / plugin & module development",
+        "Dedicated account manager",
+        "Custom optimization, scaling & maintenance",
+        "Priority 24/7 support",
+        "White-label handover and full documentation",
+      ],
+      popular: false,
+    },
+  ];
 
   const faqItems = [
     {
@@ -334,12 +417,14 @@ export default function Home() {
         "You’ll receive full access, a setup guide, and optional ongoing support.Our team is always available if you need updates, maintenance, or SEO improvements later on.",
     },
     {
-      question: " Why should I choose Lunvia instead of Fiverr or big agencies?",
+      question:
+        " Why should I choose Lunvia instead of Fiverr or big agencies?",
       answer:
         "With Zenova, you get the best of both worlds — the personal care of a small studio and the quality of a professional agency.",
     },
     {
-      question: "Can I request a completely custom project (outside the templates)?",
+      question:
+        "Can I request a completely custom project (outside the templates)?",
       answer:
         "Definitely. Just send us a message or book a free consultation.We’ll discuss your goals, brand, and timeline, then create a unique plan tailored to your business.",
     },
@@ -421,8 +506,9 @@ export default function Home() {
                   <Moon className="h-5 w-5 text-[#0B132B]" />
                 )}
               </Button>
-              <Button className="hidden md:block bg-[#0B132B] hover:bg-[#0B132B]/90 dark:bg-[#F0C93D] dark:hover:bg-[#F0C93D]/90 text-white dark:text-[#0B132B] text-xs sm:text-sm px-3 sm:px-4 md:px-6 h-9 sm:h-10"
-              onClick={() => window.location.href = '#contact'}
+              <Button
+                className="hidden md:block bg-[#0B132B] hover:bg-[#0B132B]/90 dark:bg-[#F0C93D] dark:hover:bg-[#F0C93D]/90 text-white dark:text-[#0B132B] text-xs sm:text-sm px-3 sm:px-4 md:px-6 h-9 sm:h-10"
+                onClick={() => (window.location.href = "#contact")}
               >
                 Get Started
               </Button>
@@ -486,7 +572,6 @@ export default function Home() {
                 >
                   Contact
                 </a>
-               
               </div>
             </motion.div>
           )}
@@ -537,8 +622,9 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="text-base sm:text-xl text-white/80 mb-10 max-w-2xl mx-auto"
             >
-               At Zenova, we craft premium websites — powered by modern tech and customized for your brand — giving local businesses a global look that’s fast, beautiful, and built to convert.
-
+              At Zenova, we craft premium websites — powered by modern tech and
+              customized for your brand — giving local businesses a global look
+              that’s fast, beautiful, and built to convert.
             </motion.p>
 
             <motion.div
@@ -632,7 +718,7 @@ export default function Home() {
                 title: "Modern Design",
                 description:
                   "Look Premium. Feel Professional,Our designs blend clean layouts, bold typography, and smooth motion to make your business look world-class from day one.",
-                color: "#0B132B",
+                color: "#F0C93D",
                 delay: 0.2,
               },
               {
@@ -651,8 +737,6 @@ export default function Home() {
                 color: "#F0C93D",
                 delay: 0.3,
               },
-
-
             ].map((feature, index) => (
               <motion.div
                 key={index}
@@ -702,9 +786,9 @@ export default function Home() {
               Our <span style={{ color: "#F0C93D" }}>Services</span>
             </h2>
             <p className="text-base sm:text-lg text-gray-600 dark:text-white/70 max-w-2xl mx-auto">
-              Beautiful websites. Real results.
-              From fresh designs to full revamps — Zenova helps your brand look professional, load faster, and convert better.
-
+              Beautiful websites. Real results. From fresh designs to full
+              revamps — Zenova helps your brand look professional, load faster,
+              and convert better.
             </p>
           </motion.div>
 
@@ -1217,15 +1301,25 @@ export default function Home() {
                 About <span style={{ color: "#F0C93D" }}>Zenova</span>
               </h2>
               <p className="text-base sm:text-lg text-gray-600 dark:text-white/70 mb-6 leading-relaxed">
-                At Zenova, we believe every local business deserves a global look. We’re a modern web design studio that blends human creativity with cutting-edge technology to create websites that don’t just look good — they <span className="text-sm sm:text-base font-bold text-[#F0C93D] dark:text-white">work hard</span> for your brand.
-                
-                Our mission is simple:
-
+                At Zenova, we believe every local business deserves a global
+                look. We’re a modern web design studio that blends human
+                creativity with cutting-edge technology to create websites that
+                don’t just look good — they{" "}
+                <span className="text-sm sm:text-base font-bold text-[#F0C93D] dark:text-white">
+                  work hard
+                </span>{" "}
+                for your brand. Our mission is simple:
               </p>
               <p className="text-base sm:text-lg text-gray-600 dark:text-white/70 mb-8 leading-relaxed">
-                To help small businesses, freelancers, and local brands show up online with confidence — through clean, fast, and conversion-driven design. We understand that most business owners don’t have time to figure out code or chase unreliable developers. That’s why Zenova was built differently — to make the website creation process fast, transparent, and stress-free .Whether it’s a custom design, a revamp, or a ready-to-use template, we treat every project like it’s our own brand — because your success is our best marketing.
-
-
+                To help small businesses, freelancers, and local brands show up
+                online with confidence — through clean, fast, and
+                conversion-driven design. We understand that most business
+                owners don’t have time to figure out code or chase unreliable
+                developers. That’s why Zenova was built differently — to make
+                the website creation process fast, transparent, and stress-free
+                .Whether it’s a custom design, a revamp, or a **ready-to-use
+                template**, we treat every project like it’s our own brand —
+                because your success is our best marketing.
               </p>
               <div className="grid grid-cols-3 gap-4 sm:gap-6">
                 <div className="text-center p-4">
@@ -1294,7 +1388,7 @@ export default function Home() {
                 name: "Sarah Johnson",
                 role: "Owner, Bloom Cafe",
                 content:
-                  "zenova transformed our online presence completely. We went from having no website to a stunning, professional site in just 2 days. Our bookings have tripled!",
+                  "Lunvia transformed our online presence completely. We went from having no website to a stunning, professional site in just 2 days. Our bookings have tripled!",
                 avatar:
                   "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
               },
@@ -1387,7 +1481,7 @@ export default function Home() {
                       Email Us
                     </div>
                     <div className="text-sm sm:text-base text-gray-600 dark:text-white/70">
-                      zenovastudio.web@gmail.com
+                      hello@lunvia.com
                     </div>
                   </div>
                 </div>
@@ -1427,12 +1521,15 @@ export default function Home() {
               transition={{ duration: 0.6 }}
             >
               <Card className="p-6 sm:p-8 border shadow-2xl bg-white dark:bg-[#0B132B]/80 dark:border-white/20 dark:shadow-lg dark:shadow-[#F0C93D]/5">
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={handleSubmit}>
                   <div>
                     <label className="block text-sm font-medium mb-2 text-[#0B132B] dark:text-white">
                       Your Name
                     </label>
                     <Input
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
                       placeholder="John Doe"
                       className="border-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white"
                     />
@@ -1443,6 +1540,9 @@ export default function Home() {
                     </label>
                     <Input
                       type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
                       placeholder="john@example.com"
                       className="border-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white"
                     />
@@ -1452,6 +1552,9 @@ export default function Home() {
                       Phone Number
                     </label>
                     <Input
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
                       type="tel"
                       placeholder="+1 (555) 000-0000"
                       className="border-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white"
@@ -1462,13 +1565,41 @@ export default function Home() {
                       Tell us about your project
                     </label>
                     <Textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
                       placeholder="I'm looking for..."
                       className="border-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white min-h-32"
                     />
                   </div>
-                  <Button className="w-full bg-[#0B132B] hover:bg-[#0B132B]/90 dark:bg-[#F0C93D] dark:hover:bg-[#F0C93D]/90 text-white dark:text-[#0B132B] font-semibold">
-                    Send Message
+                  <input
+                    type="text"
+                    id="website"
+                    name="website"
+                    style={{ display: "none" }}
+                    autoComplete="off"
+                  />
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-[#0B132B] hover:bg-[#0B132B]/90 dark:bg-[#F0C93D] dark:hover:bg-[#F0C93D]/90 text-white dark:text-[#0B132B] font-semibold"
+                  >
+                    {loading ? "Sending..." : "Send Message"}
                   </Button>
+
+                  {status && (
+                    <p
+                      className={`mt-4 text-center ${
+                        status.startsWith("✅")
+                          ? "text-green-600"
+                          : status.startsWith("❌")
+                          ? "text-red-600"
+                          : "text-yellow-600"
+                      }`}
+                    >
+                      {status}
+                    </p>
+                  )}
                 </form>
               </Card>
             </motion.div>
@@ -1552,7 +1683,9 @@ export default function Home() {
                 <span style={{ color: "#F0C93D" }}>STUDIO</span>
               </div>
               <p className="text-white/70 text-sm leading-relaxed">
-                crafting premium websites — powered by modern tech and customized for your brand — giving local businesses a global look that’s fast, beautiful, and built to convert.
+                crafting premium websites — powered by modern tech and
+                customized for your brand — giving local businesses a global
+                look that’s fast, beautiful, and built to convert.
               </p>
             </div>
 
