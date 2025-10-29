@@ -852,12 +852,12 @@ export default function Home() {
             <>
               <DialogHeader>
                 <DialogTitle
-                  className="text-2xl sm:text-3xl font-bold"
-                  style={{ color: "#0B132B" }}
+                   className="text-2xl sm:text-3xl font-bold text-[#0B132B] dark:text-white" 
+                  
                 >
                   {selectedService.title}
                 </DialogTitle>
-                <DialogDescription className="text-base sm:text-lg text-gray-600 mt-2">
+                <DialogDescription className="text-base sm:text-lg text-gray-600 dark:text-white/70 mt-2">
                   {selectedService.description}
                 </DialogDescription>
               </DialogHeader>
@@ -873,17 +873,17 @@ export default function Home() {
 
                 <div>
                   <h3
-                    className="text-xl font-bold mb-4"
-                    style={{ color: "#0B132B" }}
+                     className="text-xl font-bold mb-4 text-[#0B132B] dark:text-white"
+                    
                   >
                     Overview
                   </h3>
-                  <p className="text-gray-600 text-sm sm:text-base leading-relaxed mb-6">
+                  <p  className="text-xl font-bold mb-4 text-[#0B132B] dark:text-white">
                     {selectedService.fullDescription}
                   </p>
 
                   <h3
-                    className="text-xl font-bold mb-4"
+                    className="text-xl font-bold mb-4 text-[#0B132B] dark:text-white"
                     style={{ color: "#0B132B" }}
                   >
                     What's Included
@@ -893,7 +893,7 @@ export default function Home() {
                       (feature: string, i: number) => (
                         <li key={i} className="flex items-start gap-3">
                           <Check className="w-5 h-5 text-[#F0C93D] flex-shrink-0 mt-0.5" />
-                          <span className="text-sm sm:text-base text-gray-600">
+                          <span className="text-sm sm:text-base text-gray-600 dark:text-white/70">
                             {feature}
                           </span>
                         </li>
@@ -901,9 +901,9 @@ export default function Home() {
                     )}
                   </ul>
 
-                  <div className="flex flex-col sm:flex-row gap-4 p-6 bg-gray-50 rounded-lg">
+                  <div className="flex flex-col sm:flex-row gap-4 p-6 bg-gray-50 dark:bg-[#1C2541] rounded-lg">
                     <Button
-                      className="flex-1 bg-[#0B132B] hover:bg-[#0B132B]/90 text-white font-semibold"
+                      className="lex-1 bg-[#0B132B] hover:bg-[#0B132B]/90 text-white font-semibold dark:bg-[#F0C93D] dark:hover:bg-[#F0C93D]/90 dark:text-[#0B132B]"
                       onClick={() => {
                         setSelectedService(null);
                         document
@@ -915,7 +915,7 @@ export default function Home() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="flex-1 border-[#0B132B] text-[#0B132B] hover:bg-[#0B132B]/10"
+                      className="flex-1 border-[#0B132B] text-[#0B132B] hover:bg-[#0B132B]/10 dark:border-[#F0C93D] dark:text-[#F0C93D] dark:hover:bg-[#F0C93D]/10"
                       onClick={() => setSelectedService(null)}
                     >
                       Close
