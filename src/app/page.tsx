@@ -851,10 +851,7 @@ export default function Home() {
           {selectedService && (
             <>
               <DialogHeader>
-                <DialogTitle
-                   className="text-2xl sm:text-3xl font-bold text-[#0B132B] dark:text-white" 
-                  
-                >
+                <DialogTitle className="text-2xl sm:text-3xl font-bold text-[#0B132B] dark:text-white">
                   {selectedService.title}
                 </DialogTitle>
                 <DialogDescription className="text-base sm:text-lg text-gray-600 dark:text-white/70 mt-2">
@@ -872,20 +869,14 @@ export default function Home() {
                 </div>
 
                 <div>
-                  <h3
-                     className="text-xl font-bold mb-4 text-[#0B132B] dark:text-white"
-                    
-                  >
+                  <h3 className="text-xl font-bold mb-4 text-[#0B132B] dark:text-white">
                     Overview
                   </h3>
-                  <p  className="text-xl font-bold mb-4 text-[#0B132B] dark:text-white">
+                  <p className="text-xl font-bold mb-4 text-[#0B132B] dark:text-white">
                     {selectedService.fullDescription}
                   </p>
 
-                  <h3
-                    className="text-xl font-bold mb-4 text-[#0B132B] dark:text-white"
-                    style={{ color: "#0B132B" }}
-                  >
+                  <h3 className="text-xl font-bold mb-4 text-[#0B132B] dark:text-white">
                     What's Included
                   </h3>
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
@@ -995,14 +986,11 @@ export default function Home() {
         open={!!selectedTemplate}
         onOpenChange={() => setSelectedTemplate(null)}
       >
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white dark:bg-[#0B132B] text-[#0B132B] dark:text-white">
           {selectedTemplate && (
             <>
               <DialogHeader>
-                <DialogTitle
-                  className="text-2xl font-bold"
-                  style={{ color: "#0B132B" }}
-                >
+                <DialogTitle className="text-2xl font-bold text-[#0B132B] dark:text-white">
                   {selectedTemplate.name}
                 </DialogTitle>
                 <DialogDescription className="text-[#F0C93D] font-medium">
@@ -1020,13 +1008,13 @@ export default function Home() {
                 </div>
 
                 <div>
-                  <p className="text-gray-600 text-sm sm:text-base leading-relaxed mb-6">
+                  <p className="text-gray-600 dark:text-white/70 text-sm sm:text-base leading-relaxed mb-6">
                     {selectedTemplate.description}
                   </p>
 
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 sm:p-6 bg-gray-50 rounded-lg">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 sm:p-6 bg-gray-50 dark:bg-[#1C2541] rounded-lg">
                     <div>
-                      <div className="text-sm text-gray-600 mb-1">
+                      <div className="text-sm text-gray-600 dark:text-white/70 mb-1">
                         Starting at
                       </div>
                       <div
@@ -1039,11 +1027,21 @@ export default function Home() {
                     <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                       <Button
                         variant="outline"
-                        className="w-full sm:w-auto border-[#0B132B] text-[#0B132B] hover:bg-[#0B132B]/10"
+                        className="w-full sm:w-auto border-[#0B132B] text-[#0B132B] hover:bg-[#0B132B]/10 dark:border-[#F0C93D] dark:text-[#F0C93D] dark:hover:bg-[#F0C93D]/10"
+                        onClick={() => {
+    // Added: Redirect to an external link
+    window.open("https://your-external-link.com", "_blank");
+  }}
                       >
                         Preview Demo
                       </Button>
-                      <Button className="w-full sm:w-auto bg-[#F0C93D] hover:bg-[#F0C93D]/90 text-[#0B132B] font-semibold">
+                      <Button className="w-full sm:w-auto bg-[#F0C93D] hover:bg-[#F0C93D]/90 text-[#0B132B] font-semibold"
+                      onClick={() => {
+    // Added: Redirect to an external link
+    window.open("https://your-external-link.com", "_blank");
+  }}
+                      
+                      >
                         Buy Template
                       </Button>
                     </div>
