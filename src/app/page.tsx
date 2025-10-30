@@ -450,7 +450,7 @@ export default function Home() {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
-        className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-[#0B132B]/80 backdrop-blur-md border-b border-gray-100 dark:border-white/10"
+        className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-[#0B132B]/80 backdrop-blur-lg border-b border-gray-200 dark:border-white/10"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
@@ -465,28 +465,28 @@ export default function Home() {
             <div className="hidden md:flex items-center gap-6 lg:gap-8">
               <a
                 href="#"
-                className="text-sm font-medium text-[#0B132B] dark:text-white/90 hover:text-white dark:hover:text-[#F0C93D] transition-colors"
+                className="text-sm font-medium text-[#0B132B] dark:text-white/90 hover:text-[#F0C93D] dark:hover:text-[#F0C93D] transition-colors"
               >
                 Home
               </a>
 
               <a
                 href="#services"
-                className="text-sm font-medium text-[#0B132B] dark:text-white/90 hover:text-white dark:hover:text-[#F0C93D] transition-colors"
+                className="text-sm font-medium text-[#0B132B] dark:text-white/90 hover:text-[#F0C93D] dark:hover:text-[#F0C93D] transition-colors"
               >
                 Services
               </a>
 
               <a
                 href="#templates"
-                className="text-sm font-medium text-[#0B132B] dark:text-white/90 hover:text-white dark:hover:text-[#F0C93D] transition-colors"
+                className="text-sm font-medium text-[#0B132B] dark:text-white/90 hover:text-[#F0C93D] dark:hover:text-[#F0C93D] transition-colors"
               >
                 Templates
               </a>
 
               <a
                 href="#about"
-                className="text-sm font-medium text-[#0B132B] dark:text-white/90 hover:text-white dark:hover:text-[#F0C93D] transition-colors"
+                className="text-sm font-medium text-[#0B132B] dark:text-white/90 hover:text-[#F0C93D] dark:hover:text-[#F0C93D] transition-colors"
               >
                 About Us
               </a>
